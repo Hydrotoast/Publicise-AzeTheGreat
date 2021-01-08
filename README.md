@@ -10,28 +10,28 @@ This is useful for easily referencing non-public members without the hassles or 
 2. Create the MSBuild Target.  Properties are:  
 `InputAssemblies`: Assemblies to be publicized.  
 `OutputPath`: The folder to which publicized assemblies will be saved.  
-`PubliciseCompilerGenerated`: If true, compiler generated members will be publicized.  Defaults to false.  
+`PubliciseCompilerGenerated`: If true, compiler generated members will be publicized.  Defaults to false.
 
- Recommended Targets:  
+   Recommended Targets:  
 `AfterTargets="Clean"`: Will only execute on a clean or rebuild.  
 `BeforeTargets="BeforeBuild"`: Will execute before every build.  
 
- Complete example of usage:
-```
-<Target Name="Publicise" AfterTargets="Clean">
-    <ItemGroup>
-      <PubliciseInputAssemblies
-        Include="
-					PathToAssembly1;
-					PathToAssembly2"/>
-    </ItemGroup>
-
-    <Publicise
-      InputAssemblies="@(PubliciseInputAssemblies)"
-      OutputPath="../lib/"
-      PubliciseCompilerGenerated="true"/>
-  </Target>
-```
+   Complete example of usage:
+   ```
+   <Target Name="Publicise" AfterTargets="Clean">
+      <ItemGroup>
+         <PubliciseInputAssemblies
+            Include="
+   	       PathToAssembly1;
+	       PathToAssembly2"/>
+      </ItemGroup>
+   
+      <Publicise
+         InputAssemblies="@(PubliciseInputAssemblies)"
+         OutputPath="../lib/"
+         PubliciseCompilerGenerated="true"/>
+   </Target>
+   ```
 
 3. Ensure Unsafe Code is enabled.  If it is not enabled, runtime access violations will be encountered in certain situations.
 
