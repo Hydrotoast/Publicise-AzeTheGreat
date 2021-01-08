@@ -4,7 +4,7 @@
 -->
 <Project TreatAsLocalProperty="TaskFolder;PubliciseTaskAssembly">
   <PropertyGroup>
-    <PubliciseTaskAssembly>$(MSBuildThisFileDirectory)..\tasks\net46\Publicise.MSBuild.Task.dll</PubliciseTaskAssembly>
+    <PubliciseTaskAssembly>$(MSBuildThisFileDirectory)..\tasks\net46\Aze.Publicise.MSBuild.Task.dll</PubliciseTaskAssembly>
   </PropertyGroup>
   <UsingTask TaskName="Publicise" AssemblyFile="$(PubliciseTaskAssembly)" />
 </Project> 
