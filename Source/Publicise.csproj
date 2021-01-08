@@ -4,7 +4,7 @@
     <PropertyGroup>
         <Title>Publicise</Title>
         <PackageId>Publicise.MSBuild.Task</PackageId>
-        <PackageVersion>0.1.0</PackageVersion>
+        <PackageVersion>0.1.1</PackageVersion>
         <Description>MSBuild task to make assemblies public.</Description>
         <Authors>Aze</Authors>
         <Product>Publicise.MSBuild.Task</Product>
@@ -26,14 +26,14 @@
         <Platforms>AnyCPU</Platforms>
         <developmentDependency>true</developmentDependency>
         <Version>0.1.0</Version>
-        <PackageLicenseFile>LISCENSE</PackageLicenseFile>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
     </PropertyGroup>
     
     <ItemGroup>
         <None Remove="*.props" />
         <Content Include="Publicise.MSBuild.Task.TargetFramework.props" Pack="true" PackagePath="build\Publicise.MSBuild.Task.props" />
         <Content Include="Publicise.MSBuild.Task.TargetFrameworks.props" Pack="true" PackagePath="buildMultiTargeting\Publicise.MSBuild.Task.props" />
-        <None Include="../LISCENSE">
+        <None Include="..\LICENSE">
           <Pack>True</Pack>
           <PackagePath></PackagePath>
         </None>

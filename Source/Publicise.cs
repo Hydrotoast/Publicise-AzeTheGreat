@@ -10,15 +10,11 @@ namespace Publicise.MSBuild.Task
         const string outputSuffix = "_public";
 
         public virtual string AssemblyPath { get; set; }
-
         public virtual string OutputPath { get; set; }
 
-        public override bool Execute()
-		{
-            return MakePublic(AssemblyPath, OutputPath);
-        }
+        public override bool Execute() => MakePublic(AssemblyPath, OutputPath);
 
-		bool MakePublic(string assemblyPath, string outputPath)
+        bool MakePublic(string assemblyPath, string outputPath)
 		{
 			if (!File.Exists(assemblyPath))
 			{
@@ -27,16 +23,12 @@ namespace Publicise.MSBuild.Task
 			}
 
             string filename = Path.GetFileNameWithoutExtension(assemblyPath);
-
             string lastHash = null;
 			string curHash = ComputeHash(assemblyPath);
-
 			string hashPath = Path.Combine(outputPath, $"{filename}{outputSuffix}.hash");
 
 			if (File.Exists(hashPath))
 				lastHash = File.ReadAllText(hashPath);
-
-            //Log.LogMessage($"{ComputeHash(assemblyPath)} {lastHash}");
 
             if (curHash == lastHash)
 			{
@@ -45,11 +37,8 @@ namespace Publicise.MSBuild.Task
 			}
 
 			Log.LogMessage($"Making a public assembly from {assemblyPath}");
-
 			RewriteAssembly(assemblyPath).Write($"{Path.Combine(outputPath, filename)}{outputSuffix}.dll");
-
 			File.WriteAllText(hashPath, curHash);
-
             return true;
 		}
 
@@ -59,7 +48,7 @@ namespace Publicise.MSBuild.Task
 
 			using(var hash = SHA1.Create())
 			{
-				using (FileStream file = File.Open(assemblyPath, FileMode.Open, FileAccess.Read))
+				using (FileStream file = File.Open(assemblyPath, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
 					hash.ComputeHash(file);
 					file.Close();
