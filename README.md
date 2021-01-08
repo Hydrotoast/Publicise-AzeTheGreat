@@ -22,8 +22,8 @@ This is useful for easily referencing non-public members without the hassles or 
       <ItemGroup>
          <PubliciseInputAssemblies
             Include="
-   	       PathToAssembly1;
-	              PathToAssembly2"/>
+   	       PathTo/Assembly1.dll;
+	              PathTo/Assembly2.dll"/>
       </ItemGroup>
    
       <Publicise
