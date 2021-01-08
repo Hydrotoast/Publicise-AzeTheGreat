@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using dnlib.DotNet;
@@ -6,31 +8,32 @@ using Microsoft.Build.Framework;
 
 namespace Publicise.MSBuild.Task
 {
-    public class Publicise : Microsoft.Build.Utilities.Task
-    {
-        const string outputSuffix = "_public";
+	public class Publicise : Microsoft.Build.Utilities.Task
+	{
+		const string outputSuffix = "_public";
 
 		public virtual ITaskItem[] InputAssemblies { get; set; }
-        public virtual string OutputPath { get; set; }
+		public virtual string OutputPath { get; set; }
+		public virtual bool PubliciseCompilerGenerated { get; set; }
 
-        public override bool Execute()
-        {
-			if(InputAssemblies == null)
-            {
+		public override bool Execute()
+		{
+			if (InputAssemblies == null)
+			{
 				Log.LogError($"No input assemblies decalred.");
 				return false;
-            }
+			}
 
-            foreach (var assembly in InputAssemblies)
-            {
+			foreach (var assembly in InputAssemblies)
+			{
 				var path = assembly.ItemSpec;
 				MakePublic(path, OutputPath);
-            }
+			}
 
 			return true;
-        }
+		}
 
-        bool MakePublic(string assemblyPath, string outputPath)
+		bool MakePublic(string assemblyPath, string outputPath)
 		{
 			if (!File.Exists(assemblyPath))
 			{
@@ -38,31 +41,31 @@ namespace Publicise.MSBuild.Task
 				return false;
 			}
 
-            string filename = Path.GetFileNameWithoutExtension(assemblyPath);
-            string lastHash = null;
+			string filename = Path.GetFileNameWithoutExtension(assemblyPath);
+			string lastHash = null;
 			string curHash = ComputeHash(assemblyPath);
 			string hashPath = Path.Combine(outputPath, $"{filename}{outputSuffix}.hash");
 
 			if (File.Exists(hashPath))
 				lastHash = File.ReadAllText(hashPath);
 
-            if (curHash == lastHash)
+			if (curHash == lastHash)
 			{
 				Log.LogMessage("Public assembly is up to date.");
-                return true;
+				return true;
 			}
 
 			Log.LogMessage($"Making a public assembly from {assemblyPath}");
 			RewriteAssembly(assemblyPath).Write($"{Path.Combine(outputPath, filename)}{outputSuffix}.dll");
 			File.WriteAllText(hashPath, curHash);
-            return true;
+			return true;
 		}
 
-		static string ComputeHash(string assemblyPath)
+		string ComputeHash(string assemblyPath)
 		{
 			StringBuilder res = new StringBuilder();
 
-			using(var hash = SHA1.Create())
+			using (var hash = SHA1.Create())
 			{
 				using (FileStream file = File.Open(assemblyPath, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
@@ -78,37 +81,55 @@ namespace Publicise.MSBuild.Task
 		}
 
 		// Based on https://gist.github.com/Zetrith/d86b1d84e993c8117983c09f1a5dcdcd
-		static ModuleDef RewriteAssembly(string assemblyPath)
+		ModuleDef RewriteAssembly(string assemblyPath)
 		{
 			ModuleDef assembly = ModuleDefMD.Load(assemblyPath);
 
 			foreach (TypeDef type in assembly.GetTypes())
 			{
-				type.Attributes &= ~TypeAttributes.VisibilityMask;
-
-				if (type.IsNested)
-				{
-					type.Attributes |= TypeAttributes.NestedPublic;
-				}
-				else
-				{
-					type.Attributes |= TypeAttributes.Public;
-				}
+				PubliciseType(type);
 
 				foreach (MethodDef method in type.Methods)
+					PubliciseMethod(method);
+
+				foreach (FieldDef field in type.Fields)
+					PubliciseField(field);
+			}
+
+			return assembly;
+
+			void PubliciseType(TypeDef type)
+			{
+				if (ShouldPublicise(type.CustomAttributes))
+				{
+					type.Attributes &= ~TypeAttributes.VisibilityMask;
+					if (type.IsNested)
+						type.Attributes |= TypeAttributes.NestedPublic;
+					else
+						type.Attributes |= TypeAttributes.Public;
+				}
+			}
+
+			void PubliciseMethod(MethodDef method)
+			{
+				if (ShouldPublicise(method.CustomAttributes))
 				{
 					method.Attributes &= ~MethodAttributes.MemberAccessMask;
 					method.Attributes |= MethodAttributes.Public;
 				}
+			}
 
-				foreach (FieldDef field in type.Fields)
+			void PubliciseField(FieldDef field)
+			{
+				if (ShouldPublicise(field.CustomAttributes))
 				{
 					field.Attributes &= ~FieldAttributes.FieldAccessMask;
 					field.Attributes |= FieldAttributes.Public;
 				}
 			}
 
-			return assembly;
-		}
+			bool ShouldPublicise(CustomAttributeCollection attributes) =>
+				PubliciseCompilerGenerated || !attributes.Any(a => a.AttributeType.Name == nameof(CompilerGeneratedAttribute));
+        }
 	}
 }
