@@ -12,11 +12,11 @@ This is useful for easily referencing non-public members without the hassles or 
 `OutputPath`: The folder to which publicized assemblies will be saved.  
 `PubliciseCompilerGenerated`: If true, compiler generated members will be publicized.  Defaults to false.  
 
-Recommended Targets:  
+ Recommended Targets:  
 `AfterTargets="Clean"`: Will only execute on a clean or rebuild.  
 `BeforeTargets="BeforeBuild"`: Will execute before every build.  
 
-Complete example of usage:
+ Complete example of usage:
 ```
 <Target Name="Publicise" AfterTargets="Clean">
     <ItemGroup>
