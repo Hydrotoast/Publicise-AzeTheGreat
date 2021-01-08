@@ -36,3 +36,7 @@ This is useful for easily referencing non-public members without the hassles or 
 3. Ensure Unsafe Code is enabled.  If it is not enabled, runtime access violations will be encountered in certain situations.
 
 4. Change your project references to `AssemblyName_public.dll`, which will be located in the `OutputPath` folder (after the task is executed at least once).
+
+## Credits
+
+Code based on [this task](https://github.com/rwmt/Publicise), with original idea (to my knowledge), from [this repository](https://github.com/CabbageCrow/AssemblyPublicizer).
