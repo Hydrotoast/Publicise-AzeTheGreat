@@ -1,5 +1,5 @@
 # Publicise
-An MSBuild Task that creates a copies of an assemblies in which all members are public.
+An MSBuild Task that creates copies of assemblies in which all members are public.
 
 This is useful for easily referencing non-public members without the hassles or associated performance hits of reflection.
 
