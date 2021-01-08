@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using dnlib.DotNet;
+using Microsoft.Build.Framework;
 
 namespace Publicise.MSBuild.Task
 {
@@ -9,10 +10,25 @@ namespace Publicise.MSBuild.Task
     {
         const string outputSuffix = "_public";
 
-        public virtual string AssemblyPath { get; set; }
+		public virtual ITaskItem[] InputAssemblies { get; set; }
         public virtual string OutputPath { get; set; }
 
-        public override bool Execute() => MakePublic(AssemblyPath, OutputPath);
+        public override bool Execute()
+        {
+			if(InputAssemblies == null)
+            {
+				Log.LogError($"No input assemblies decalred.");
+				return false;
+            }
+
+            foreach (var assembly in InputAssemblies)
+            {
+				var path = assembly.ItemSpec;
+				MakePublic(path, OutputPath);
+            }
+
+			return true;
+        }
 
         bool MakePublic(string assemblyPath, string outputPath)
 		{
