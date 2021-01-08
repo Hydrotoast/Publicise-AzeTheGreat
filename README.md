@@ -23,7 +23,7 @@ This is useful for easily referencing non-public members without the hassles or 
          <PubliciseInputAssemblies
             Include="
    	       PathToAssembly1;
-	       PathToAssembly2"/>
+	              PathToAssembly2"/>
       </ItemGroup>
    
       <Publicise
