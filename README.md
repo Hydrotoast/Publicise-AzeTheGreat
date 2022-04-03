@@ -5,7 +5,7 @@ This is useful for easily referencing non-public members without the hassles or 
 
 ## Usage
 
-1. Install the [NuGet Package](https://www.nuget.org/packages/Aze.Publicise.MSBuild.Task/1.0.0).
+1. Install the [NuGet Package](https://www.nuget.org/packages/Aze.Publicise.MSBuild.Task).
 
 2. Create the MSBuild Target.  Properties are:  
 `InputAssemblies`: Assemblies to be publicized.  
@@ -36,6 +36,8 @@ This is useful for easily referencing non-public members without the hassles or 
 3. Ensure Unsafe Code is enabled.  If it is not enabled, runtime access violations will be encountered in certain situations.
 
 4. Change your project references to `AssemblyName_public.dll`, which will be located in the `OutputPath` folder (after the task is executed at least once).
+
+5. The task stores a hash of the assemblies to reduce build time when there is nothing new to compute.  If you need to re-publicise the assembly when it has not changed, simply delete the corresponding `x.hash` file located next to the `x_public.dll` assembly.
 
 ## Credits
 
