@@ -112,12 +112,15 @@ namespace Publicise.MSBuild.Task
 
 			void PubliciseMethod(MethodDef method)
 			{
-				if (ShouldPublicise(method.CustomAttributes))
+				if (ShouldPublicise(method.CustomAttributes) || IsAutoProperty())
 				{
 					method.Attributes &= ~MethodAttributes.MemberAccessMask;
 					method.Attributes |= MethodAttributes.Public;
 				}
-			}
+
+				// Auto property methods are compiler generated, but they are user facing and should be always be publicised.
+				bool IsAutoProperty() => method.IsGetter || method.IsSetter;
+            }
 
 			void PubliciseField(FieldDef field)
 			{
