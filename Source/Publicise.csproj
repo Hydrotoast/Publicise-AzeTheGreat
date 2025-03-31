@@ -4,7 +4,7 @@
     <PropertyGroup>
         <Title>Publicise</Title>
         <PackageId>Aze.Publicise.MSBuild.Task</PackageId>
-        <PackageVersion>1.1.0</PackageVersion>
+        <PackageVersion>1.2.0</PackageVersion>
         <Description>MSBuild task to make assemblies public.</Description>
         <Authors>Aze</Authors>
         <Product>Aze.Publicise.MSBuild.Task</Product>
@@ -26,7 +26,7 @@
         <Platforms>AnyCPU</Platforms>
         <DevelopmentDependency>true</DevelopmentDependency>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Version>1.1.0</Version>
+        <Version>1.2.0</Version>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageReleaseNotes></PackageReleaseNotes>
