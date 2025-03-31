@@ -16,7 +16,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <TargetFramework>net472</TargetFramework>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <RootNamespace>Aze.Publicise.MSBuild.Task</RootNamespace>
         <AssemblyName>Aze.Publicise.MSBuild.Task</AssemblyName>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
