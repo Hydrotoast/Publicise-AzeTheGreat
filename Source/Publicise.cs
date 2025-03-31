@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -10,7 +10,7 @@ namespace Publicise.MSBuild.Task
 {
 	public class Publicise : Microsoft.Build.Utilities.Task
 	{
-		const string outputSuffix = "_public";
+        const string OutputSuffix = "_public";
 
 		public virtual ITaskItem[] InputAssemblies { get; set; }
 		public virtual string OutputPath { get; set; }
@@ -33,21 +33,21 @@ namespace Publicise.MSBuild.Task
 			return true;
 		}
 
-		bool MakePublic(string assemblyPath, string outputPath)
-		{
-			if (!File.Exists(assemblyPath))
-			{
-				Log.LogError($"Invalid path {assemblyPath}");
-				return false;
-			}
+        bool MakePublic(string assemblyPath, string outputPath)
+        {
+            if (!File.Exists(assemblyPath))
+            {
+                Log.LogError($"Invalid path {assemblyPath}");
+                return false;
+            }
 
 			string filename = Path.GetFileNameWithoutExtension(assemblyPath);
 			string lastHash = null;
 			string curHash = ComputeHash(assemblyPath);
-			string hashPath = Path.Combine(outputPath, $"{filename}{outputSuffix}.hash");
+			string hashPath = Path.Combine(outputPath, $"{filename}{OutputSuffix}.hash");
 
-			if (File.Exists(hashPath))
-				lastHash = File.ReadAllText(hashPath);
+            if (File.Exists(hashPath))
+                lastHash = File.ReadAllText(hashPath);
 
 			if (curHash == lastHash)
 			{
@@ -55,38 +55,38 @@ namespace Publicise.MSBuild.Task
 				return true;
 			}
 
-			Log.LogMessage($"Making a public assembly from {assemblyPath}");
-			RewriteAssembly(assemblyPath).Write($"{Path.Combine(outputPath, filename)}{outputSuffix}.dll");
-			File.WriteAllText(hashPath, curHash);
+            Log.LogMessage($"Making a public assembly from {assemblyPath}");
+			RewriteAssembly(assemblyPath).Write($"{Path.Combine(outputPath, filename)}{OutputSuffix}.dll");
+            File.WriteAllText(hashPath, curHash);
 			return true;
 		}
 
 		string ComputeHash(string assemblyPath)
-		{
-			StringBuilder res = new StringBuilder();
+        {
+            StringBuilder res = new StringBuilder();
 
 			using (var hash = SHA1.Create())
 			{
 				using (FileStream file = File.Open(assemblyPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-				{
-					hash.ComputeHash(file);
-					file.Close();
-				}
+                {
+                    hash.ComputeHash(file);
+                    file.Close();
+                }
 
-				foreach (byte b in hash.Hash)
-					res.Append(b.ToString("X2"));
-			}
+                foreach (byte b in hash.Hash)
+                    res.Append(b.ToString("X2"));
+            }
 
-			return res.ToString();
-		}
+            return res.ToString();
+        }
 
-		// Based on https://gist.github.com/Zetrith/d86b1d84e993c8117983c09f1a5dcdcd
+        // Based on https://gist.github.com/Zetrith/d86b1d84e993c8117983c09f1a5dcdcd
 		ModuleDef RewriteAssembly(string assemblyPath)
-		{
-			ModuleDef assembly = ModuleDefMD.Load(assemblyPath);
+        {
+            ModuleDef assembly = ModuleDefMD.Load(assemblyPath);
 
-			foreach (TypeDef type in assembly.GetTypes())
-			{
+            foreach (TypeDef type in assembly.GetTypes())
+            {
 				PubliciseType(type);
 
 				foreach (MethodDef method in type.Methods)
@@ -112,24 +112,27 @@ namespace Publicise.MSBuild.Task
 
 			void PubliciseMethod(MethodDef method)
 			{
-				if (ShouldPublicise(method.CustomAttributes) || IsAutoProperty())
-				{
-					method.Attributes &= ~MethodAttributes.MemberAccessMask;
-					method.Attributes |= MethodAttributes.Public;
-				}
+				if (ShouldPublicise(method.CustomAttributes) || (IsAutoProperty() && !IsPublicOverride()))
+                {
+                    method.Attributes &= ~MethodAttributes.MemberAccessMask;
+                    method.Attributes |= MethodAttributes.Public;
+                }
 
 				// Auto property methods are compiler generated, but they are user facing and should be always be publicised.
 				bool IsAutoProperty() => method.IsGetter || method.IsSetter;
-            }
+
+				// Don't make methods which explicitly implement interfaces public 
+				bool IsPublicOverride() => method.Overrides.Any();
+			}
 
 			void PubliciseField(FieldDef field)
 			{
 				if (ShouldPublicise(field.CustomAttributes))
-				{
-					field.Attributes &= ~FieldAttributes.FieldAccessMask;
-					field.Attributes |= FieldAttributes.Public;
-				}
-			}
+                {
+                    field.Attributes &= ~FieldAttributes.FieldAccessMask;
+                    field.Attributes |= FieldAttributes.Public;
+                }
+            }
 
 			bool ShouldPublicise(CustomAttributeCollection attributes) =>
 				PubliciseCompilerGenerated || !attributes.Any(a => a.AttributeType.Name == nameof(CompilerGeneratedAttribute));

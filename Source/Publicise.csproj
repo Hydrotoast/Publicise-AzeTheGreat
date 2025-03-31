@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-    
+
     <PropertyGroup>
         <Title>Publicise</Title>
         <PackageId>Aze.Publicise.MSBuild.Task</PackageId>
@@ -14,9 +14,9 @@
         <RepositoryUrl>https://github.com/AzeTheGreat/Publicise</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
-    
+
     <PropertyGroup>
-        <TargetFrameworks>net46</TargetFrameworks>
+        <TargetFramework>net472</TargetFramework>
         <RootNamespace>Aze.Publicise.MSBuild.Task</RootNamespace>
         <AssemblyName>Aze.Publicise.MSBuild.Task</AssemblyName>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -29,7 +29,7 @@
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageReleaseNotes></PackageReleaseNotes>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <None Remove="*.props" />
         <Content Include="Aze.Publicise.MSBuild.Task.TargetFramework.props" Pack="true" PackagePath="build\Aze.Publicise.MSBuild.Task.props" />
@@ -39,15 +39,16 @@
           <PackagePath></PackagePath>
         </None>
     </ItemGroup>
-    
-    <ItemGroup>
-        <Reference Include="Microsoft.Build.Framework" />
-        <Reference Include="Microsoft.Build.Utilities.v4.0" />
-    </ItemGroup>
 
+    <!-- Ensure that build tools are private, i.e. not dependencies for consumers. -->
     <ItemGroup>
-        <PackageReference Include="dnlib" Version="3.3.2" PrivateAssets="All" />
-        <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18.2" PrivateAssets="All" />
+        <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.40" ExcludeAssets="runtime" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.9.0" ExcludeAssets="runtime" PrivateAssets="all"  />
+    </ItemGroup>
+    
+    <!-- Dependencies are repacked and internalized into a single output assembly using ILRepack. -->
+    <ItemGroup>
+        <PackageReference Include="dnlib" Version="3.3.2" />
     </ItemGroup>
 
 </Project>
