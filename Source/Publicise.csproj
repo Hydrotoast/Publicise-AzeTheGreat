@@ -24,10 +24,20 @@
         <IsTestProject>false</IsTestProject>
         <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
         <Platforms>AnyCPU</Platforms>
-        <developmentDependency>true</developmentDependency>
+        <DevelopmentDependency>true</DevelopmentDependency>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Version>1.1.0</Version>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageReleaseNotes></PackageReleaseNotes>
+    </PropertyGroup>
+    
+    <!-- Suppress warnings for MSBuild Tasks. See <https://learn.microsoft.com/en-us/visualstudio/msbuild/tutorial-custom-task-code-generation?view=vs-2022#bundle-dependencies-into-the-package>. -->
+    <PropertyGroup>
+        <!-- NuGet does validation that libraries in a package are exposed as dependencies, but we _explicitly_ do not want that behavior for MSBuild tasks. They are isolated by design. Therefore we ignore this specific warning. -->
+        <NoWarn>NU5100</NoWarn>
+        <!-- Suppress NuGet warning NU5128. -->
+        <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     </PropertyGroup>
 
     <ItemGroup>
@@ -35,8 +45,12 @@
         <Content Include="Aze.Publicise.MSBuild.Task.TargetFramework.props" Pack="true" PackagePath="build\Aze.Publicise.MSBuild.Task.props" />
         <Content Include="Aze.Publicise.MSBuild.Task.TargetFrameworks.props" Pack="true" PackagePath="buildMultiTargeting\Aze.Publicise.MSBuild.Task.props" />
         <None Include="..\LICENSE">
-          <Pack>True</Pack>
-          <PackagePath></PackagePath>
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
+        <None Include="..\README.md">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
         </None>
     </ItemGroup>
 
